@@ -1,5 +1,3 @@
-// This is the boilerplate code given for you
-// You can modify this code
 // Product data
 const products = [
   { id: 1, name: "Product 1", price: 10 },
@@ -11,6 +9,8 @@ const products = [
 
 // DOM elements
 const productList = document.getElementById("product-list");
+const cartList = document.getElementById("cart-list");
+const clearCartBtn = document.getElementById("clear-cart-btn");
 
 // Render product list
 function renderProducts() {
@@ -22,16 +22,42 @@ function renderProducts() {
 }
 
 // Render cart list
-function renderCart() {}
+function renderCart() {
+  const cartItems = JSON.parse(sessionStorage.getItem("cart")) || [];
+  cartList.innerHTML = ""; // Clear the cart list before rendering
+  cartItems.forEach((item) => {
+    const li = document.createElement("li");
+    li.innerHTML = `${item.name} - $${item.price}`;
+    cartList.appendChild(li);
+  });
+}
 
 // Add item to cart
-function addToCart(productId) {}
-
-// Remove item from cart
-function removeFromCart(productId) {}
+function addToCart(productId) {
+  const product = products.find((p) => p.id === productId);
+  if (product) {
+    const cartItems = JSON.parse(sessionStorage.getItem("cart")) || [];
+    cartItems.push(product);
+    sessionStorage.setItem("cart", JSON.stringify(cartItems));
+    renderCart(); // Update the cart display
+  }
+}
 
 // Clear cart
-function clearCart() {}
+function clearCart() {
+  sessionStorage.removeItem("cart");
+  renderCart(); // Update the cart display
+}
+
+// Event listeners
+productList.addEventListener("click", (event) => {
+  if (event.target.classList.contains("add-to-cart-btn")) {
+    const productId = parseInt(event.target.getAttribute("data-id"));
+    addToCart(productId);
+  }
+});
+
+clearCartBtn.addEventListener("click", clearCart);
 
 // Initial render
 renderProducts();
